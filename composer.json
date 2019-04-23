@@ -1,0 +1,22 @@
+{
+  "require": {
+    "go-swoole/base-server":"dev-master"
+  },
+  "autoload": {
+    "psr-4": {
+      "GoSwoole\\Plugins\\": "src/"
+    }
+  },
+  "authors": [
+    {
+      "name": "tmtbe",
+      "email": "896369042@qq.com",
+      "homepage": "https://github.com/tmtbe"
+    }
+  ],
+  "name": "go-swoole/aop",
+  "type": "library",
+  "keywords": ["server", "swoole"],
+  "description": "aop",
+  "license": "MIT"
+}
