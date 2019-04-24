@@ -11,6 +11,7 @@ namespace GoSwoole\Plugins\Aop\ExampleClass;
 
 use Go\Aop\Aspect;
 use Go\Aop\Intercept\MethodInvocation;
+use Go\Lang\Annotation\After;
 use Go\Lang\Annotation\Before;
 use Go\Lang\Annotation\Pointcut;
 
@@ -31,6 +32,17 @@ class MonitorAspect implements Aspect
      */
     protected function beforeProcessStart(MethodInvocation $invocation)
     {
-        echo("11111111\n");
+        echo("before\n");
+    }
+
+    /**
+     * after onProcessStart
+     *
+     * @param MethodInvocation $invocation Invocation
+     * @After("$this->processStart")
+     */
+    protected function afterProcessStart(MethodInvocation $invocation)
+    {
+        echo("after\n");
     }
 }
