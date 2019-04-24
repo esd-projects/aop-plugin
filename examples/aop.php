@@ -9,10 +9,6 @@ use GoSwoole\Plugins\Aop\ExampleClass\MonitorAspect;
 
 require __DIR__ . '/../vendor/autoload.php';
 
-class MyPort extends \GoSwoole\BaseServer\ExampleClass\Server\DefaultServerPort
-{
-
-}
 
 //----多端口配置----
 $httpPortConfig = new PortConfig();
@@ -32,14 +28,13 @@ $serverConfig = new ServerConfig();
 $serverConfig->setWorkerNum(4);
 $serverConfig->setRootDir(__DIR__ . "/../");
 
-
 $server = new DefaultServer($serverConfig);
 //添加端口
-$server->addPort("http", $httpPortConfig, MyPort::class);//使用自定义实例
-$server->addPort("ws", $wsPortConfig);//使用默认实例
+$server->addPort("http", $httpPortConfig);
+$server->addPort("ws", $wsPortConfig);
 //添加插件
 $aopPlugin = new AopPlugin();
-$aopConfig = new AopConfig($serverConfig->getVendorDir()."/go-swoole/base-server");
+$aopConfig = new AopConfig($serverConfig->getVendorDir() . "/go-swoole/base-server");
 $aopConfig->addAspect(new MonitorAspect());
 //设置插件配置
 $aopPlugin->setAopConfig($aopConfig);

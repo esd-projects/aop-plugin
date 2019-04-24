@@ -65,12 +65,12 @@ class AopPlugin extends AbstractPlugin
     {
         //有文件操作必须关闭全局RuntimeCoroutine
         enableRuntimeCoroutine(false);
-        $this->aopConfig->buildConfig();
+       /* $this->aopConfig->buildConfig();
         $eventDispatcher = $context->getDeepByClassName(EventDispatcher::class);
         if ($eventDispatcher instanceof EventDispatcher) {
             goWithContext(function () use ($eventDispatcher, $context) {
                 $channel = $eventDispatcher->listen(PluginManagerEvent::PlugAfterServerStartEvent, null, true);
-                $channel->pop();
+                $channel->pop();*/
                 $cacheDir = $this->aopConfig->getCacheDir() ?? $context->getServer()->getServerConfig()->getBinDir() . DIRECTORY_SEPARATOR . "cache" . DIRECTORY_SEPARATOR . "aop";
                 if (file_exists($cacheDir)) {
                     $this->clear_dir($cacheDir);
@@ -87,8 +87,8 @@ class AopPlugin extends AbstractPlugin
                     // Include paths restricts the directories where aspects should be applied, or empty for all source files
                     'includePaths' => $this->aopConfig->getIncludePaths()
                 ]);
-            });
-        }
+        /*    });
+        }*/
     }
 
     /**

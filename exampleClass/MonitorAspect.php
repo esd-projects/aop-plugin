@@ -1,4 +1,4 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: 白猫
@@ -12,8 +12,10 @@ namespace GoSwoole\Plugins\Aop\ExampleClass;
 use Go\Aop\Aspect;
 use Go\Aop\Intercept\MethodInvocation;
 use Go\Lang\Annotation\After;
+use Go\Lang\Annotation\Around;
 use Go\Lang\Annotation\Before;
 use Go\Lang\Annotation\Pointcut;
+use GoSwoole\BaseServer\Server\Beans\Response;
 use GoSwoole\BaseServer\Server\Server;
 use Monolog\Logger;
 
@@ -24,7 +26,9 @@ class MonitorAspect implements Aspect
      *
      * @Pointcut("execution(public GoSwoole\BaseServer\ExampleClass\Server\DefaultProcess->onProcessStart(*))")
      */
-    protected function processStart() {}
+    protected function processStart()
+    {
+    }
 
     /**
      * before onProcessStart
@@ -49,4 +53,23 @@ class MonitorAspect implements Aspect
         $log = Server::$instance->getContext()->getByClassName(Logger::class);
         $log->info("after");
     }
+
+
+    /**
+     * around onHttpRequest
+     *
+     * @param MethodInvocation $invocation Invocation
+     * @Around("within(GoSwoole\BaseServer\Server\IServerPort+) && execution(public **->onHttpRequest(*))")
+     */
+    protected function aroundRequest(MethodInvocation $invocation)
+    {
+        $log = Server::$instance->getContext()->getByClassName(Logger::class);
+        $log->info("aroundRequest");
+        list($request, $response) = $invocation->getArguments();
+        if ($response instanceof Response) {
+            $response->end("HelloAOP");
+        }
+        return;
+    }
+
 }
