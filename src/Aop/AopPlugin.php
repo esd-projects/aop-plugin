@@ -8,8 +8,10 @@
 
 namespace GoSwoole\Plugins\Aop;
 
+use GoSwoole\BaseServer\Plugins\Event\EventDispatcher;
 use GoSwoole\BaseServer\Server\Context;
 use GoSwoole\BaseServer\Server\Plugin\AbstractPlugin;
+use GoSwoole\BaseServer\Server\Plugin\PluginManagerEvent;
 
 /**
  * AOP插件
@@ -63,30 +65,30 @@ class AopPlugin extends AbstractPlugin
     {
         //有文件操作必须关闭全局RuntimeCoroutine
         enableRuntimeCoroutine(false);
-        /* $this->aopConfig->buildConfig();
-         $eventDispatcher = $context->getDeepByClassName(EventDispatcher::class);
-         if ($eventDispatcher instanceof EventDispatcher) {
-             goWithContext(function () use ($eventDispatcher, $context) {
-                 $channel = $eventDispatcher->listen(PluginManagerEvent::PlugAfterServerStartEvent, null, true);
-                 $channel->pop();*/
-        $cacheDir = $this->aopConfig->getCacheDir() ?? $context->getServer()->getServerConfig()->getBinDir() . DIRECTORY_SEPARATOR . "cache" . DIRECTORY_SEPARATOR . "aop";
-        if (file_exists($cacheDir)) {
-            $this->clear_dir($cacheDir);
-            rmdir($cacheDir);
+        $this->aopConfig->buildConfig();
+        $eventDispatcher = $context->getDeepByClassName(EventDispatcher::class);
+        if ($eventDispatcher instanceof EventDispatcher) {
+            goWithContext(function () use ($eventDispatcher, $context) {
+                $channel = $eventDispatcher->listen(PluginManagerEvent::PlugAfterServerStartEvent, null, true);
+                $channel->pop();
+                $cacheDir = $this->aopConfig->getCacheDir() ?? $context->getServer()->getServerConfig()->getBinDir() . DIRECTORY_SEPARATOR . "cache" . DIRECTORY_SEPARATOR . "aop";
+                if (file_exists($cacheDir)) {
+                    $this->clear_dir($cacheDir);
+                    rmdir($cacheDir);
+                }
+                mkdir($cacheDir, 0777, true);
+                $this->applicationAspectKernel = ApplicationAspectKernel::getInstance();
+                $this->applicationAspectKernel->setConfig($this->aopConfig);
+                //初始化
+                $this->applicationAspectKernel->init([
+                    'debug' => $this->aopConfig->isDebug(), // use 'false' for production mode
+                    'appDir' => $context->getServer()->getServerConfig()->getRootDir(), // Application root directory
+                    'cacheDir' => $cacheDir, // Cache directory
+                    // Include paths restricts the directories where aspects should be applied, or empty for all source files
+                    'includePaths' => $this->aopConfig->getIncludePaths()
+                ]);
+            });
         }
-        mkdir($cacheDir, 0777, true);
-        $this->applicationAspectKernel = ApplicationAspectKernel::getInstance();
-        $this->applicationAspectKernel->setConfig($this->aopConfig);
-        //初始化
-        $this->applicationAspectKernel->init([
-            'debug' => $this->aopConfig->isDebug(), // use 'false' for production mode
-            'appDir' => $context->getServer()->getServerConfig()->getRootDir(), // Application root directory
-            'cacheDir' => $cacheDir, // Cache directory
-            // Include paths restricts the directories where aspects should be applied, or empty for all source files
-            'includePaths' => $this->aopConfig->getIncludePaths()
-        ]);
-        /*    });
-        }*/
     }
 
     /**
