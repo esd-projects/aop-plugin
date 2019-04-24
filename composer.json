@@ -1,10 +1,12 @@
 {
   "require": {
-    "go-swoole/base-server":"dev-master"
+    "go-swoole/base-server": "dev-master",
+    "goaop/framework": "^2.3"
   },
   "autoload": {
     "psr-4": {
-      "GoSwoole\\Plugins\\": "src/"
+      "GoSwoole\\Plugins\\": "src/",
+      "GoSwoole\\Plugins\\Aop\\ExampleClass\\": "exampleClass/"
     }
   },
   "authors": [
@@ -16,7 +18,10 @@
   ],
   "name": "go-swoole/aop",
   "type": "library",
-  "keywords": ["server", "swoole"],
+  "keywords": [
+    "server",
+    "swoole"
+  ],
   "description": "aop",
   "license": "MIT"
 }
