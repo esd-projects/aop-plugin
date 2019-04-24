@@ -14,6 +14,8 @@ use Go\Aop\Intercept\MethodInvocation;
 use Go\Lang\Annotation\After;
 use Go\Lang\Annotation\Before;
 use Go\Lang\Annotation\Pointcut;
+use GoSwoole\BaseServer\Server\Server;
+use Monolog\Logger;
 
 class MonitorAspect implements Aspect
 {
@@ -32,7 +34,8 @@ class MonitorAspect implements Aspect
      */
     protected function beforeProcessStart(MethodInvocation $invocation)
     {
-        echo("before\n");
+        $log = Server::$instance->getContext()->getByClassName(Logger::class);
+        $log->info("before");
     }
 
     /**
@@ -43,6 +46,7 @@ class MonitorAspect implements Aspect
      */
     protected function afterProcessStart(MethodInvocation $invocation)
     {
-        echo("after\n");
+        $log = Server::$instance->getContext()->getByClassName(Logger::class);
+        $log->info("after");
     }
 }
