@@ -16,12 +16,12 @@
       "homepage": "https://github.com/tmtbe"
     }
   ],
-  "name": "go-swoole/aop",
+  "name": "go-swoole/aop-plugin",
   "type": "library",
   "keywords": [
     "server",
     "swoole"
   ],
-  "description": "go-swoole/aop",
+  "description": "go-swoole/aop-plugin",
   "license": "MIT"
 }
