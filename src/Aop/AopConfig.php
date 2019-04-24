@@ -111,6 +111,7 @@ class AopConfig
 
     /**
      * 构建config
+     * @throws ConfigException
      */
     public function buildConfig()
     {

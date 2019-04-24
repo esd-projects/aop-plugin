@@ -59,16 +59,15 @@ class AopPlugin extends AbstractPlugin
      * 在服务启动前
      * @param Context $context
      * @return mixed
-     * @throws \GoSwoole\BaseServer\Server\Exception\ConfigException
      */
     public function beforeServerStart(Context $context)
     {
         //有文件操作必须关闭全局RuntimeCoroutine
         enableRuntimeCoroutine(false);
-        $this->aopConfig->buildConfig();
         $eventDispatcher = $context->getDeepByClassName(EventDispatcher::class);
         if ($eventDispatcher instanceof EventDispatcher) {
             goWithContext(function () use ($eventDispatcher, $context) {
+                $this->aopConfig->buildConfig();
                 $channel = $eventDispatcher->listen(PluginManagerEvent::PlugAfterServerStartEvent, null, true);
                 $channel->pop();
                 $cacheDir = $this->aopConfig->getCacheDir() ?? $context->getServer()->getServerConfig()->getBinDir() . DIRECTORY_SEPARATOR . "cache" . DIRECTORY_SEPARATOR . "aop";
