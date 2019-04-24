@@ -67,9 +67,9 @@ class AopPlugin extends AbstractPlugin
         $eventDispatcher = $context->getDeepByClassName(EventDispatcher::class);
         if ($eventDispatcher instanceof EventDispatcher) {
             goWithContext(function () use ($eventDispatcher, $context) {
-                $this->aopConfig->buildConfig();
                 $channel = $eventDispatcher->listen(PluginManagerEvent::PlugAfterServerStartEvent, null, true);
                 $channel->pop();
+                $this->aopConfig->buildConfig();
                 $cacheDir = $this->aopConfig->getCacheDir() ?? $context->getServer()->getServerConfig()->getBinDir() . DIRECTORY_SEPARATOR . "cache" . DIRECTORY_SEPARATOR . "aop";
                 if (file_exists($cacheDir)) {
                     $this->clear_dir($cacheDir);
