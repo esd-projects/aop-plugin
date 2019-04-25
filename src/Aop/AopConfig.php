@@ -35,7 +35,7 @@ class AopConfig
      */
     private $aspects = [];
 
-    public function __construct( ...$includePaths)
+    public function __construct(...$includePaths)
     {
         $this->includePaths = $includePaths;
     }
@@ -93,7 +93,9 @@ class AopConfig
      */
     public function addIncludePath(string $includePath)
     {
-        $this->includePaths[] = $includePath;
+        if (!array_key_exists($includePath, $this->includePaths)) {
+            $this->includePaths[] = $includePath;
+        }
     }
 
     public function addAspect(Aspect $param)
