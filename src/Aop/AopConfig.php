@@ -37,7 +37,9 @@ class AopConfig
 
     public function __construct(...$includePaths)
     {
-        $this->includePaths = $includePaths;
+        foreach ($includePaths as $includePath){
+            $this->addIncludePath($includePath);
+        }
     }
 
     /**
@@ -93,6 +95,8 @@ class AopConfig
      */
     public function addIncludePath(string $includePath)
     {
+        $includePath = realpath($includePath);
+        if ($includePath === false) return;
         if (!array_key_exists($includePath, $this->includePaths)) {
             $this->includePaths[] = $includePath;
         }
