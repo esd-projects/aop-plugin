@@ -33,12 +33,9 @@ $server = new DefaultServer($serverConfig);
 $server->addPort("http", $httpPortConfig);
 $server->addPort("ws", $wsPortConfig);
 //添加插件
-$aopPlugin = new AopPlugin();
 $aopConfig = new AopConfig($serverConfig->getVendorDir() . "/go-swoole/base-server");
 $aopConfig->addAspect(new MonitorAspect());
-//设置插件配置
-$aopPlugin->setAopConfig($aopConfig);
-$server->getPlugManager()->addPlug($aopPlugin);
+$server->getPlugManager()->addPlug(new AopPlugin($aopConfig));
 //添加进程
 $server->addProcess("test1");
 $server->addProcess("test2");//使用自定义实例

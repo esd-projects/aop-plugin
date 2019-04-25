@@ -29,6 +29,12 @@ class AopPlugin extends AbstractPlugin
      */
     private $applicationAspectKernel;
 
+    public function __construct(AopConfig $aopConfig)
+    {
+        parent::__construct();
+        $this->aopConfig = $aopConfig;
+    }
+
     /**
      * 获取插件名字
      * @return string
