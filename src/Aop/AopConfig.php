@@ -28,7 +28,7 @@ class AopConfig
      * Include paths restricts the directories where aspects should be applied
      * @var string[]
      */
-    private $includePaths;
+    private $includePaths = [];
 
     /**
      * @var Aspect[]
