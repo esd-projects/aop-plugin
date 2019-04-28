@@ -84,6 +84,9 @@ class AopPlugin extends AbstractPlugin
                 mkdir($cacheDir, 0777, true);
                 $this->applicationAspectKernel = ApplicationAspectKernel::getInstance();
                 $this->applicationAspectKernel->setConfig($this->aopConfig);
+                //自动添加src目录
+                $serverConfig = $context->getServer()->getServerConfig();
+                $this->aopConfig->addIncludePath($serverConfig->getSrcDir());
                 //初始化
                 $this->applicationAspectKernel->init([
                     'debug' => $this->aopConfig->isDebug(), // use 'false' for production mode
