@@ -29,9 +29,18 @@ class AopPlugin extends AbstractPlugin
      */
     private $applicationAspectKernel;
 
-    public function __construct(AopConfig $aopConfig)
+    /**
+     * AopPlugin constructor.
+     * @param AopConfig|null $aopConfig
+     * @throws \DI\DependencyException
+     * @throws \ReflectionException
+     */
+    public function __construct(?AopConfig $aopConfig=null)
     {
         parent::__construct();
+        if($aopConfig == null){
+            $aopConfig = new AopConfig();
+        }
         $this->aopConfig = $aopConfig;
     }
 
@@ -87,6 +96,9 @@ class AopPlugin extends AbstractPlugin
                 //自动添加src目录
                 $serverConfig = $context->getServer()->getServerConfig();
                 $this->aopConfig->addIncludePath($serverConfig->getSrcDir());
+                $this->aopConfig->setCacheDir($cacheDir);
+                $this->aopConfig->setDebug(false);
+                $this->aopConfig->merge();
                 //初始化
                 $this->applicationAspectKernel->init([
                     'debug' => $this->aopConfig->isDebug(), // use 'false' for production mode

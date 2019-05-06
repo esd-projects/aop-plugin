@@ -10,25 +10,27 @@ namespace GoSwoole\Plugins\Aop;
 
 
 use Go\Aop\Aspect;
+use GoSwoole\BaseServer\Plugins\Config\BaseConfig;
 use GoSwoole\BaseServer\Server\Exception\ConfigException;
 
-class AopConfig
+class AopConfig extends BaseConfig
 {
+    const key = "aop";
     /**
      * use 'false' for production mode
      * @var bool
      */
-    private $debug = false;
+    protected $debug = false;
     /**
      * Cache directory
      * @var string
      */
-    private $cacheDir;
+    protected $cacheDir;
     /**
      * Include paths restricts the directories where aspects should be applied
      * @var string[]
      */
-    private $includePaths = [];
+    protected $includePaths = [];
 
     /**
      * @var Aspect[]
@@ -37,7 +39,8 @@ class AopConfig
 
     public function __construct(...$includePaths)
     {
-        foreach ($includePaths as $includePath){
+        parent::__construct(self::key);
+        foreach ($includePaths as $includePath) {
             $this->addIncludePath($includePath);
         }
     }
