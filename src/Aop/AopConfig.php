@@ -100,9 +100,9 @@ class AopConfig extends BaseConfig
     {
         $includePath = realpath($includePath);
         if ($includePath === false) return;
-        if (!array_key_exists($includePath, $this->includePaths)) {
-            $this->includePaths[] = $includePath;
-        }
+        $key = str_replace(ROOT_DIR,"",$includePath);
+        $key = str_replace("/",".",$key);
+        $this->includePaths[$key] = $includePath;
     }
 
     public function addAspect(Aspect $param)
