@@ -79,7 +79,7 @@ class AopConfig extends BaseConfig
     {
         $includePath = realpath($includePath);
         if ($includePath === false) return;
-        $key = str_replace(ROOT_DIR,"",$includePath);
+        $key = str_replace(realpath(ROOT_DIR),"",$includePath);
         $key = str_replace("/",".",$key);
         $this->includePaths[$key] = $includePath;
     }
