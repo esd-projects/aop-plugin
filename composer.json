@@ -1,12 +1,12 @@
 {
   "require": {
-    "go-swoole/base-server": "~0.1",
+    "esd/base-server": "~0.1",
     "goaop/framework": "^2.3"
   },
   "autoload": {
     "psr-4": {
-      "GoSwoole\\Plugins\\": "src/",
-      "GoSwoole\\Plugins\\Aop\\ExampleClass\\": "exampleClass/"
+      "ESD\\Plugins\\": "src/",
+      "ESD\\Plugins\\Aop\\ExampleClass\\": "exampleClass/"
     }
   },
   "authors": [
@@ -16,12 +16,12 @@
       "homepage": "https://github.com/tmtbe"
     }
   ],
-  "name": "go-swoole/aop-plugin",
+  "name": "esd/aop-plugin",
   "type": "library",
   "keywords": [
     "server",
     "swoole"
   ],
-  "description": "go-swoole/aop-plugin",
+  "description": "esd/aop-plugin",
   "license": "MIT"
 }

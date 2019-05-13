@@ -6,7 +6,7 @@
  * Time: 18:50
  */
 
-namespace GoSwoole\Plugins\Aop\ExampleClass;
+namespace ESD\Plugins\Aop\ExampleClass;
 
 
 use Go\Aop\Aspect;
@@ -15,8 +15,8 @@ use Go\Lang\Annotation\After;
 use Go\Lang\Annotation\Around;
 use Go\Lang\Annotation\Before;
 use Go\Lang\Annotation\Pointcut;
-use GoSwoole\BaseServer\Server\Beans\Response;
-use GoSwoole\BaseServer\Server\Server;
+use ESD\BaseServer\Server\Beans\Response;
+use ESD\BaseServer\Server\Server;
 use Monolog\Logger;
 
 class MonitorAspect implements Aspect
@@ -24,7 +24,7 @@ class MonitorAspect implements Aspect
     /**
      * Pointcut for onProcessStart
      *
-     * @Pointcut("execution(public GoSwoole\BaseServer\ExampleClass\Server\DefaultProcess->onProcessStart(*))")
+     * @Pointcut("execution(public ESD\BaseServer\ExampleClass\Server\DefaultProcess->onProcessStart(*))")
      */
     protected function processStart()
     {
@@ -59,7 +59,7 @@ class MonitorAspect implements Aspect
      * around onHttpRequest
      *
      * @param MethodInvocation $invocation Invocation
-     * @Around("within(GoSwoole\BaseServer\Server\IServerPort+) && execution(public **->onHttpRequest(*))")
+     * @Around("within(ESD\BaseServer\Server\IServerPort+) && execution(public **->onHttpRequest(*))")
      */
     protected function aroundRequest(MethodInvocation $invocation)
     {

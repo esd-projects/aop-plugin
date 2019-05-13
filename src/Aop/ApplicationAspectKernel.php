@@ -6,7 +6,7 @@
  * Time: 18:26
  */
 
-namespace GoSwoole\Plugins\Aop;
+namespace ESD\Plugins\Aop;
 
 
 use Go\Core\AspectContainer;

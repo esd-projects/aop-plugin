@@ -6,17 +6,17 @@
  * Time: 18:23
  */
 
-namespace GoSwoole\Plugins\Aop;
+namespace ESD\Plugins\Aop;
 
-use GoSwoole\BaseServer\Plugins\Event\EventDispatcher;
-use GoSwoole\BaseServer\Server\Context;
-use GoSwoole\BaseServer\Server\Plugin\AbstractPlugin;
-use GoSwoole\BaseServer\Server\Plugin\PluginManagerEvent;
+use ESD\BaseServer\Plugins\Event\EventDispatcher;
+use ESD\BaseServer\Server\Context;
+use ESD\BaseServer\Server\Plugin\AbstractPlugin;
+use ESD\BaseServer\Server\Plugin\PluginManagerEvent;
 
 /**
  * AOP插件
  * Class AopPlugin
- * @package GoSwoole\Plugins\Aop
+ * @package ESD\Plugins\Aop
  */
 class AopPlugin extends AbstractPlugin
 {
@@ -78,11 +78,10 @@ class AopPlugin extends AbstractPlugin
                 $serverConfig = $context->getServer()->getServerConfig();
                 $this->aopConfig->addIncludePath($serverConfig->getSrcDir());
                 $this->aopConfig->setCacheDir($cacheDir);
-                $this->aopConfig->setDebug(false);
                 $this->aopConfig->merge();
                 //初始化
                 $this->applicationAspectKernel->init([
-                    'debug' => $this->aopConfig->isDebug(), // use 'false' for production mode
+                    'debug' => $serverConfig->isDebug(), // use 'false' for production mode
                     'appDir' => $context->getServer()->getServerConfig()->getRootDir(), // Application root directory
                     'cacheDir' => $cacheDir, // Cache directory
                     // Include paths restricts the directories where aspects should be applied, or empty for all source files

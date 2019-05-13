@@ -1,11 +1,11 @@
 <?php
 
-use GoSwoole\BaseServer\ExampleClass\Server\DefaultServer;
-use GoSwoole\BaseServer\Server\Config\PortConfig;
-use GoSwoole\BaseServer\Server\Config\ServerConfig;
-use GoSwoole\Plugins\Aop\AopConfig;
-use GoSwoole\Plugins\Aop\AopPlugin;
-use GoSwoole\Plugins\Aop\ExampleClass\MonitorAspect;
+use ESD\BaseServer\ExampleClass\Server\DefaultServer;
+use ESD\BaseServer\Server\Config\PortConfig;
+use ESD\BaseServer\Server\Config\ServerConfig;
+use ESD\Plugins\Aop\AopConfig;
+use ESD\Plugins\Aop\AopPlugin;
+use ESD\Plugins\Aop\ExampleClass\MonitorAspect;
 
 require __DIR__ . '/../vendor/autoload.php';
 
@@ -33,7 +33,7 @@ $server = new DefaultServer($serverConfig);
 $server->addPort("http", $httpPortConfig);
 $server->addPort("ws", $wsPortConfig);
 //添加插件
-$aopConfig = new AopConfig($serverConfig->getVendorDir() . "/go-swoole/base-server");
+$aopConfig = new AopConfig($serverConfig->getVendorDir() . "/esd/base-server");
 $aopConfig->addAspect(new MonitorAspect());
 $server->getPlugManager()->addPlug(new AopPlugin($aopConfig));
 //添加进程

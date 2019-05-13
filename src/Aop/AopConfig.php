@@ -6,21 +6,16 @@
  * Time: 18:27
  */
 
-namespace GoSwoole\Plugins\Aop;
+namespace ESD\Plugins\Aop;
 
 
 use Go\Aop\Aspect;
-use GoSwoole\BaseServer\Plugins\Config\BaseConfig;
-use GoSwoole\BaseServer\Server\Exception\ConfigException;
+use ESD\BaseServer\Plugins\Config\BaseConfig;
+use ESD\BaseServer\Server\Exception\ConfigException;
 
 class AopConfig extends BaseConfig
 {
     const key = "aop";
-    /**
-     * use 'false' for production mode
-     * @var bool
-     */
-    protected $debug = false;
     /**
      * Cache directory
      * @var string
@@ -43,22 +38,6 @@ class AopConfig extends BaseConfig
         foreach ($includePaths as $includePath) {
             $this->addIncludePath($includePath);
         }
-    }
-
-    /**
-     * @return bool
-     */
-    public function isDebug(): bool
-    {
-        return $this->debug;
-    }
-
-    /**
-     * @param bool $debug
-     */
-    public function setDebug(bool $debug): void
-    {
-        $this->debug = $debug;
     }
 
     /**
