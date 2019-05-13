@@ -65,19 +65,18 @@ class AopPlugin extends AbstractPlugin
         //有文件操作必须关闭全局RuntimeCoroutine
         enableRuntimeCoroutine(false);
         $eventDispatcher = $context->getDeepByClassName(EventDispatcher::class);
-        $this->aopConfig->buildConfig();
         $cacheDir = $this->aopConfig->getCacheDir() ?? $context->getServer()->getServerConfig()->getBinDir() . DIRECTORY_SEPARATOR . "cache" . DIRECTORY_SEPARATOR . "aop";
         if (!file_exists($cacheDir)) {
             mkdir($cacheDir, 0777, true);
         }
-        $this->applicationAspectKernel = ApplicationAspectKernel::getInstance();
-        $this->applicationAspectKernel->setConfig($this->aopConfig);
-        $this->setToDIContainer(ApplicationAspectKernel::class, $this->applicationAspectKernel);
         //自动添加src目录
         $serverConfig = $context->getServer()->getServerConfig();
         $this->aopConfig->addIncludePath($serverConfig->getSrcDir());
         $this->aopConfig->setCacheDir($cacheDir);
         $this->aopConfig->merge();
+        $this->applicationAspectKernel = ApplicationAspectKernel::getInstance();
+        $this->applicationAspectKernel->setConfig($this->aopConfig);
+        $this->setToDIContainer(ApplicationAspectKernel::class, $this->applicationAspectKernel);
         //初始化
         $this->applicationAspectKernel->init([
             'debug' => $serverConfig->isDebug(), // use 'false' for production mode
