@@ -35,10 +35,10 @@ class AopPlugin extends AbstractPlugin
      * @throws \DI\DependencyException
      * @throws \ReflectionException
      */
-    public function __construct(?AopConfig $aopConfig=null)
+    public function __construct(?AopConfig $aopConfig = null)
     {
         parent::__construct();
-        if($aopConfig == null){
+        if ($aopConfig == null) {
             $aopConfig = new AopConfig();
         }
         $this->aopConfig = $aopConfig;
@@ -57,36 +57,40 @@ class AopPlugin extends AbstractPlugin
      * 在服务启动前
      * @param Context $context
      * @return mixed
+     * @throws \ESD\BaseServer\Exception
+     * @throws \ESD\BaseServer\Server\Exception\ConfigException
      */
     public function beforeServerStart(Context $context)
     {
         //有文件操作必须关闭全局RuntimeCoroutine
         enableRuntimeCoroutine(false);
         $eventDispatcher = $context->getDeepByClassName(EventDispatcher::class);
+        $this->aopConfig->buildConfig();
+        $cacheDir = $this->aopConfig->getCacheDir() ?? $context->getServer()->getServerConfig()->getBinDir() . DIRECTORY_SEPARATOR . "cache" . DIRECTORY_SEPARATOR . "aop";
+        if (!file_exists($cacheDir)) {
+            mkdir($cacheDir, 0777, true);
+        }
+        $this->applicationAspectKernel = ApplicationAspectKernel::getInstance();
+        $this->applicationAspectKernel->setConfig($this->aopConfig);
+        $this->setToDIContainer(ApplicationAspectKernel::class, $this->applicationAspectKernel);
+        //自动添加src目录
+        $serverConfig = $context->getServer()->getServerConfig();
+        $this->aopConfig->addIncludePath($serverConfig->getSrcDir());
+        $this->aopConfig->setCacheDir($cacheDir);
+        $this->aopConfig->merge();
+        //初始化
+        $this->applicationAspectKernel->init([
+            'debug' => $serverConfig->isDebug(), // use 'false' for production mode
+            'appDir' => $context->getServer()->getServerConfig()->getRootDir(), // Application root directory
+            'cacheDir' => $cacheDir, // Cache directory
+            // Include paths restricts the directories where aspects should be applied, or empty for all source files
+            'includePaths' => $this->aopConfig->getIncludePaths()
+        ]);
         if ($eventDispatcher instanceof EventDispatcher) {
             goWithContext(function () use ($eventDispatcher, $context) {
                 $channel = $eventDispatcher->listen(PluginManagerEvent::PlugAfterServerStartEvent, null, true);
                 $channel->pop();
-                $this->aopConfig->buildConfig();
-                $cacheDir = $this->aopConfig->getCacheDir() ?? $context->getServer()->getServerConfig()->getBinDir() . DIRECTORY_SEPARATOR . "cache" . DIRECTORY_SEPARATOR . "aop";
-                if (!file_exists($cacheDir)) {
-                    mkdir($cacheDir, 0777, true);
-                }
-                $this->applicationAspectKernel = ApplicationAspectKernel::getInstance();
-                $this->applicationAspectKernel->setConfig($this->aopConfig);
-                //自动添加src目录
-                $serverConfig = $context->getServer()->getServerConfig();
-                $this->aopConfig->addIncludePath($serverConfig->getSrcDir());
-                $this->aopConfig->setCacheDir($cacheDir);
-                $this->aopConfig->merge();
-                //初始化
-                $this->applicationAspectKernel->init([
-                    'debug' => $serverConfig->isDebug(), // use 'false' for production mode
-                    'appDir' => $context->getServer()->getServerConfig()->getRootDir(), // Application root directory
-                    'cacheDir' => $cacheDir, // Cache directory
-                    // Include paths restricts the directories where aspects should be applied, or empty for all source files
-                    'includePaths' => $this->aopConfig->getIncludePaths()
-                ]);
+                $this->applicationAspectKernel->initAspect();
             });
         }
     }

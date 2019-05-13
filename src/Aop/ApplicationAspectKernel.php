@@ -25,6 +25,20 @@ class ApplicationAspectKernel extends AspectKernel
         $this->aopConfig = $aopConfig;
     }
 
+
+    public function init(array $options = [])
+    {
+        parent::init($options);
+        $this->wasInitialized = false;
+    }
+
+    public function initAspect()
+    {
+        foreach ($this->aopConfig->getAspects() as $aspect) {
+            $this->container->registerAspect($aspect);
+        }
+        $this->wasInitialized = true;
+    }
     /**
      * Configure an AspectContainer with advisors, aspects and pointcuts
      *
@@ -34,9 +48,7 @@ class ApplicationAspectKernel extends AspectKernel
      */
     protected function configureAop(AspectContainer $container)
     {
-        foreach ($this->aopConfig->getAspects() as $aspect) {
-            $container->registerAspect($aspect);
-        }
+       return;
     }
 
 }
