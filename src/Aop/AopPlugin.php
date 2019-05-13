@@ -91,6 +91,7 @@ class AopPlugin extends AbstractPlugin
                 $channel = $eventDispatcher->listen(PluginManagerEvent::PlugAfterServerStartEvent, null, true);
                 $channel->pop();
                 $this->applicationAspectKernel->initAspect();
+                $eventDispatcher->dispatchEvent(new AopEvent());
             });
         }
     }
