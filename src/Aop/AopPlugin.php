@@ -8,10 +8,9 @@
 
 namespace ESD\Plugins\Aop;
 
-use ESD\BaseServer\Plugins\Event\EventDispatcher;
+use Doctrine\Common\Annotations\CachedReader;
 use ESD\BaseServer\Server\Context;
 use ESD\BaseServer\Server\Plugin\AbstractPlugin;
-use ESD\BaseServer\Server\Plugin\PluginManagerEvent;
 
 /**
  * AOP插件
@@ -54,29 +53,27 @@ class AopPlugin extends AbstractPlugin
     }
 
     /**
-     * 在服务启动前
+     * 初始化
      * @param Context $context
-     * @return mixed
      * @throws \ESD\BaseServer\Exception
-     * @throws \ESD\BaseServer\Server\Exception\ConfigException
      */
-    public function beforeServerStart(Context $context)
+    public function init(Context $context)
     {
+        parent::init($context);
         //有文件操作必须关闭全局RuntimeCoroutine
         enableRuntimeCoroutine(false);
-        $eventDispatcher = $context->getDeepByClassName(EventDispatcher::class);
         $cacheDir = $this->aopConfig->getCacheDir() ?? $context->getServer()->getServerConfig()->getBinDir() . DIRECTORY_SEPARATOR . "cache" . DIRECTORY_SEPARATOR . "aop";
         if (!file_exists($cacheDir)) {
             mkdir($cacheDir, 0777, true);
         }
+        $this->aopConfig->merge();
+        $this->applicationAspectKernel = ApplicationAspectKernel::getInstance();
+        $this->applicationAspectKernel->setConfig($this->aopConfig);
         //自动添加src目录
         $serverConfig = $context->getServer()->getServerConfig();
         $this->aopConfig->addIncludePath($serverConfig->getSrcDir());
         $this->aopConfig->setCacheDir($cacheDir);
         $this->aopConfig->merge();
-        $this->applicationAspectKernel = ApplicationAspectKernel::getInstance();
-        $this->applicationAspectKernel->setConfig($this->aopConfig);
-        $this->setToDIContainer(ApplicationAspectKernel::class, $this->applicationAspectKernel);
         //初始化
         $this->applicationAspectKernel->init([
             'debug' => $serverConfig->isDebug(), // use 'false' for production mode
@@ -85,14 +82,20 @@ class AopPlugin extends AbstractPlugin
             // Include paths restricts the directories where aspects should be applied, or empty for all source files
             'includePaths' => $this->aopConfig->getIncludePaths()
         ]);
-        if ($eventDispatcher instanceof EventDispatcher) {
-            goWithContext(function () use ($eventDispatcher, $context) {
-                $channel = $eventDispatcher->listen(PluginManagerEvent::PlugAfterServerStartEvent, null, true);
-                $channel->pop();
-                $this->applicationAspectKernel->initAspect();
-                $eventDispatcher->dispatchEvent(new AopEvent());
-            });
-        }
+        $cacheReader = $this->applicationAspectKernel->getContainer()->get('aspect.annotation.reader');
+        $this->setToDIContainer(CachedReader::class, $cacheReader);
+    }
+
+    /**
+     * 在服务启动前
+     * @param Context $context
+     * @return mixed
+     * @throws \ESD\BaseServer\Server\Exception\ConfigException
+     */
+    public function beforeServerStart(Context $context)
+    {
+        $this->aopConfig->merge();
+        $this->applicationAspectKernel->initAspect();
     }
 
     /**
