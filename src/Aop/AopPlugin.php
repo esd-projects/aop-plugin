@@ -67,23 +67,20 @@ class AopPlugin extends AbstractPlugin
             mkdir($cacheDir, 0777, true);
         }
         $this->aopConfig->merge();
-        $this->applicationAspectKernel = ApplicationAspectKernel::getInstance();
-        $this->applicationAspectKernel->setConfig($this->aopConfig);
         //自动添加src目录
         $serverConfig = $context->getServer()->getServerConfig();
         $this->aopConfig->addIncludePath($serverConfig->getSrcDir());
         $this->aopConfig->setCacheDir($cacheDir);
-        $this->aopConfig->merge();
         //初始化
-        $this->applicationAspectKernel->init([
+        $this->applicationAspectKernel = ApplicationAspectKernel::getInstance();
+        $this->applicationAspectKernel->setConfig($this->aopConfig);
+        $this->applicationAspectKernel->initContainer([
             'debug' => $serverConfig->isDebug(), // use 'false' for production mode
-            'appDir' => $context->getServer()->getServerConfig()->getRootDir(), // Application root directory
-            'cacheDir' => $cacheDir, // Cache directory
-            // Include paths restricts the directories where aspects should be applied, or empty for all source files
+            'appDir' => $serverConfig->getRootDir(), // Application root directory
+            'cacheDir' => $this->aopConfig->getCacheDir(), // Cache directory
             'includePaths' => $this->aopConfig->getIncludePaths()
         ]);
-        $cacheReader = $this->applicationAspectKernel->getContainer()->get('aspect.annotation.reader');
-        $this->setToDIContainer(CachedReader::class, $cacheReader);
+        $this->setToDIContainer(CachedReader::class, $this->applicationAspectKernel->getContainer()->get('aspect.annotation.reader'));
     }
 
     /**
@@ -95,7 +92,13 @@ class AopPlugin extends AbstractPlugin
     public function beforeServerStart(Context $context)
     {
         $this->aopConfig->merge();
-        $this->applicationAspectKernel->initAspect();
+        $serverConfig = $context->getServer()->getServerConfig();
+        $this->applicationAspectKernel->init([
+            'debug' => $serverConfig->isDebug(), // use 'false' for production mode
+            'appDir' => $serverConfig->getRootDir(), // Application root directory
+            'cacheDir' => $this->aopConfig->getCacheDir(), // Cache directory
+            'includePaths' => $this->aopConfig->getIncludePaths()
+        ]);
     }
 
     /**

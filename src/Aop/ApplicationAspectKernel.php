@@ -9,8 +9,11 @@
 namespace ESD\Plugins\Aop;
 
 
+use Go\Aop\Features;
 use Go\Core\AspectContainer;
 use Go\Core\AspectKernel;
+use Go\Instrument\ClassLoading\AopComposerLoader;
+use Go\Instrument\ClassLoading\SourceTransformingLoader;
 
 class ApplicationAspectKernel extends AspectKernel
 {
@@ -25,20 +28,44 @@ class ApplicationAspectKernel extends AspectKernel
         $this->aopConfig = $aopConfig;
     }
 
+    public function initContainer(array $options)
+    {
+        $this->options = $this->normalizeOptions($options);
+        define('AOP_ROOT_DIR', $this->options['appDir']);
+        define('AOP_CACHE_DIR', $this->options['cacheDir']);
+        $this->container = new $this->options['containerClass'];
+        $this->container->set('kernel', $this);
+        $this->container->set('kernel.interceptFunctions', $this->hasFeature(Features::INTERCEPT_FUNCTIONS));
+        $this->container->set('kernel.options', $this->options);
+    }
 
     public function init(array $options = [])
     {
-        parent::init($options);
-        $this->wasInitialized = false;
-    }
-
-    public function initAspect()
-    {
-        foreach ($this->aopConfig->getAspects() as $aspect) {
-            $this->container->registerAspect($aspect);
+        if ($this->wasInitialized) {
+            return;
         }
+        $this->options = $this->normalizeOptions($options);
+        /** @var $container AspectContainer */
+        $container = $this->container;
+        SourceTransformingLoader::register();
+
+        foreach ($this->registerTransformers() as $sourceTransformer) {
+            SourceTransformingLoader::addTransformer($sourceTransformer);
+        }
+
+        // Register kernel resources in the container for debug mode
+        if ($this->options['debug']) {
+            $this->addKernelResourcesToContainer($container);
+        }
+
+        AopComposerLoader::init($this->options, $container);
+
+        // Register all AOP configuration in the container
+        $this->configureAop($container);
+
         $this->wasInitialized = true;
     }
+
     /**
      * Configure an AspectContainer with advisors, aspects and pointcuts
      *
@@ -48,7 +75,9 @@ class ApplicationAspectKernel extends AspectKernel
      */
     protected function configureAop(AspectContainer $container)
     {
-       return;
+        foreach ($this->aopConfig->getAspects() as $aspect) {
+            $this->container->registerAspect($aspect);
+        }
     }
 
 }
