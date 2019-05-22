@@ -9,6 +9,8 @@
 namespace ESD\Plugins\Aop;
 
 
+use ESD\BaseServer\Order\OrderOwnerTrait;
+use Go\Aop\Aspect;
 use Go\Aop\Features;
 use Go\Core\AspectContainer;
 use Go\Core\AspectKernel;
@@ -17,6 +19,7 @@ use Go\Instrument\ClassLoading\SourceTransformingLoader;
 
 class ApplicationAspectKernel extends AspectKernel
 {
+    use OrderOwnerTrait;
     /**
      * @var AopConfig
      */
@@ -39,6 +42,10 @@ class ApplicationAspectKernel extends AspectKernel
         $this->container->set('kernel.options', $this->options);
     }
 
+    /**
+     * @param array $options
+     * @throws \ESD\BaseServer\Exception
+     */
     public function init(array $options = [])
     {
         if ($this->wasInitialized) {
@@ -72,11 +79,18 @@ class ApplicationAspectKernel extends AspectKernel
      * @param AspectContainer $container
      *
      * @return void
+     * @throws \ESD\BaseServer\Exception
      */
     protected function configureAop(AspectContainer $container)
     {
         foreach ($this->aopConfig->getAspects() as $aspect) {
-            $this->container->registerAspect($aspect);
+            $this->addOrder($aspect);
+        }
+        $this->order();
+        foreach ($this->orderList as $order) {
+            if ($order instanceof Aspect) {
+                $this->container->registerAspect($order);
+            }
         }
     }
 

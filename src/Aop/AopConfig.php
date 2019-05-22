@@ -9,7 +9,6 @@
 namespace ESD\Plugins\Aop;
 
 
-use Go\Aop\Aspect;
 use ESD\BaseServer\Plugins\Config\BaseConfig;
 use ESD\BaseServer\Server\Exception\ConfigException;
 
@@ -28,7 +27,7 @@ class AopConfig extends BaseConfig
     protected $includePaths = [];
 
     /**
-     * @var Aspect[]
+     * @var OrderAspect[]
      */
     private $aspects = [];
 
@@ -79,18 +78,18 @@ class AopConfig extends BaseConfig
     {
         $includePath = realpath($includePath);
         if ($includePath === false) return;
-        $key = str_replace(realpath(ROOT_DIR),"",$includePath);
-        $key = str_replace("/",".",$key);
+        $key = str_replace(realpath(ROOT_DIR), "", $includePath);
+        $key = str_replace("/", ".", $key);
         $this->includePaths[$key] = $includePath;
     }
 
-    public function addAspect(Aspect $param)
+    public function addAspect(OrderAspect $param)
     {
         $this->aspects[] = $param;
     }
 
     /**
-     * @return Aspect[]
+     * @return OrderAspect[]
      */
     public function getAspects(): array
     {
