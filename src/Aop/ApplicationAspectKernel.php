@@ -10,6 +10,7 @@ namespace ESD\Plugins\Aop;
 
 
 use ESD\BaseServer\Order\OrderOwnerTrait;
+use ESD\BaseServer\Server\Server;
 use Go\Aop\Aspect;
 use Go\Aop\Features;
 use Go\Core\AspectContainer;
@@ -89,6 +90,7 @@ class ApplicationAspectKernel extends AspectKernel
         $this->order();
         foreach ($this->orderList as $order) {
             if ($order instanceof Aspect) {
+                Server::$instance->getLog()->debug("Add {$order->getName()} aspect");
                 $this->container->registerAspect($order);
             }
         }
