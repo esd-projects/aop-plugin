@@ -1,6 +1,6 @@
 {
   "require": {
-    "esd/base-server": "~0.1",
+    "esd/esd-core": "~0.1",
     "goaop/framework": "^2.3"
   },
   "autoload": {

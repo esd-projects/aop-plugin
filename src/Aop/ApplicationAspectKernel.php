@@ -9,8 +9,9 @@
 namespace ESD\Plugins\Aop;
 
 
-use ESD\BaseServer\Order\OrderOwnerTrait;
-use ESD\BaseServer\Server\Server;
+use ESD\Core\Exception;
+use ESD\Core\Order\OrderOwnerTrait;
+use ESD\Core\Server\Server;
 use Go\Aop\Aspect;
 use Go\Aop\Features;
 use Go\Core\AspectContainer;
@@ -45,7 +46,7 @@ class ApplicationAspectKernel extends AspectKernel
 
     /**
      * @param array $options
-     * @throws \ESD\BaseServer\Exception
+     * @throws Exception
      */
     public function init(array $options = [])
     {
@@ -80,7 +81,7 @@ class ApplicationAspectKernel extends AspectKernel
      * @param AspectContainer $container
      *
      * @return void
-     * @throws \ESD\BaseServer\Exception
+     * @throws Exception
      */
     protected function configureAop(AspectContainer $container)
     {

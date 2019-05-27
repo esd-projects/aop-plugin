@@ -9,7 +9,7 @@
 namespace ESD\Plugins\Aop;
 
 
-use ESD\BaseServer\Plugins\Event\Event;
+use ESD\Core\Event\Event;
 
 class AopEvent extends Event
 {
