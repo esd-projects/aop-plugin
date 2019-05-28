@@ -24,7 +24,7 @@ class MonitorAspect extends OrderAspect
     /**
      * Pointcut for onProcessStart
      *
-     * @Pointcut("execution(public ESD\BaseServer\ExampleClass\Server\DefaultProcess->onProcessStart(*))")
+     * @Pointcut("execution(public ESD\Server\Co\ExampleClass\Process\DefaultProcess->onProcessStart(*))")
      */
     protected function processStart()
     {
