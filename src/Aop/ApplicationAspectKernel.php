@@ -47,6 +47,8 @@ class ApplicationAspectKernel extends AspectKernel
     /**
      * @param array $options
      * @throws Exception
+     * @throws \DI\DependencyException
+     * @throws \DI\NotFoundException
      */
     public function init(array $options = [])
     {
@@ -82,6 +84,8 @@ class ApplicationAspectKernel extends AspectKernel
      *
      * @return void
      * @throws Exception
+     * @throws \DI\DependencyException
+     * @throws \DI\NotFoundException
      */
     protected function configureAop(AspectContainer $container)
     {

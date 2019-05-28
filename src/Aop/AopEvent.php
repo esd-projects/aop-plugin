@@ -8,8 +8,7 @@
 
 namespace ESD\Plugins\Aop;
 
-
-use ESD\Core\Event\Event;
+use ESD\Core\Plugins\Event\Event;
 
 class AopEvent extends Event
 {

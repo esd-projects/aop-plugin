@@ -61,6 +61,9 @@ class AopPlugin extends AbstractPlugin
      * @param Context $context
      * @throws ConfigException
      * @throws Exception
+     * @throws \DI\DependencyException
+     * @throws \DI\NotFoundException
+     * @throws \Exception
      */
     public function init(Context $context)
     {
@@ -75,6 +78,7 @@ class AopPlugin extends AbstractPlugin
         //自动添加src目录
         $serverConfig = Server::$instance->getServerConfig();
         $this->aopConfig->addIncludePath($serverConfig->getSrcDir());
+        $this->aopConfig->addIncludePath($serverConfig->getVendorDir()."/esd/esd-core/src");
         $this->aopConfig->setCacheDir($cacheDir);
         //初始化
         $this->applicationAspectKernel = ApplicationAspectKernel::getInstance();
@@ -94,6 +98,8 @@ class AopPlugin extends AbstractPlugin
      * @return mixed
      * @throws ConfigException
      * @throws Exception
+     * @throws \DI\DependencyException
+     * @throws \DI\NotFoundException
      */
     public function beforeServerStart(Context $context)
     {

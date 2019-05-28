@@ -8,18 +8,17 @@
 
 namespace ESD\Plugins\Aop\ExampleClass;
 
-
-use Go\Aop\Aspect;
+use ESD\Core\Server\Beans\Response;
+use ESD\Plugins\Aop\OrderAspect;
+use ESD\Server\Co\Server;
 use Go\Aop\Intercept\MethodInvocation;
 use Go\Lang\Annotation\After;
 use Go\Lang\Annotation\Around;
 use Go\Lang\Annotation\Before;
 use Go\Lang\Annotation\Pointcut;
-use ESD\BaseServer\Server\Beans\Response;
-use ESD\BaseServer\Server\Server;
 use Monolog\Logger;
 
-class MonitorAspect implements Aspect
+class MonitorAspect extends OrderAspect
 {
     /**
      * Pointcut for onProcessStart
@@ -59,7 +58,7 @@ class MonitorAspect implements Aspect
      * around onHttpRequest
      *
      * @param MethodInvocation $invocation Invocation
-     * @Around("within(ESD\BaseServer\Server\IServerPort+) && execution(public **->onHttpRequest(*))")
+     * @Around("within(ESD\Core\Server\Port\IServerPort+) && execution(public **->onHttpRequest(*))")
      */
     protected function aroundRequest(MethodInvocation $invocation)
     {
@@ -72,4 +71,11 @@ class MonitorAspect implements Aspect
         return;
     }
 
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return "MonitorAspect";
+    }
 }
