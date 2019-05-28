@@ -33,7 +33,7 @@ $server = new DefaultServer($serverConfig);
 $server->addPort("http", $httpPortConfig);
 $server->addPort("ws", $wsPortConfig);
 //添加插件
-$aopConfig = new AopConfig($serverConfig->getVendorDir() . "/esd/base-server");
+$aopConfig = new AopConfig($serverConfig->getVendorDir() . "/esd");
 $aopConfig->addAspect(new MonitorAspect());
 $server->getPlugManager()->addPlug(new AopPlugin($aopConfig));
 //添加进程

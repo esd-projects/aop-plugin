@@ -8,18 +8,19 @@
 
 namespace ESD\Plugins\Aop\ExampleClass;
 
+use ESD\Core\Plugins\Logger\GetLogger;
 use ESD\Core\Server\Beans\Response;
 use ESD\Plugins\Aop\OrderAspect;
-use ESD\Server\Co\Server;
 use Go\Aop\Intercept\MethodInvocation;
 use Go\Lang\Annotation\After;
 use Go\Lang\Annotation\Around;
 use Go\Lang\Annotation\Before;
 use Go\Lang\Annotation\Pointcut;
-use Monolog\Logger;
 
 class MonitorAspect extends OrderAspect
 {
+    use GetLogger;
+
     /**
      * Pointcut for onProcessStart
      *
@@ -33,24 +34,26 @@ class MonitorAspect extends OrderAspect
      * before onProcessStart
      *
      * @param MethodInvocation $invocation Invocation
+     * @throws \DI\DependencyException
+     * @throws \DI\NotFoundException
      * @Before("$this->processStart")
      */
     protected function beforeProcessStart(MethodInvocation $invocation)
     {
-        $log = Server::$instance->getContext()->getByClassName(Logger::class);
-        $log->info("before");
+        $this->info("before");
     }
 
     /**
      * after onProcessStart
      *
      * @param MethodInvocation $invocation Invocation
+     * @throws \DI\DependencyException
+     * @throws \DI\NotFoundException
      * @After("$this->processStart")
      */
     protected function afterProcessStart(MethodInvocation $invocation)
     {
-        $log = Server::$instance->getContext()->getByClassName(Logger::class);
-        $log->info("after");
+        $this->info("after");
     }
 
 
@@ -58,12 +61,13 @@ class MonitorAspect extends OrderAspect
      * around onHttpRequest
      *
      * @param MethodInvocation $invocation Invocation
+     * @throws \DI\DependencyException
+     * @throws \DI\NotFoundException
      * @Around("within(ESD\Core\Server\Port\IServerPort+) && execution(public **->onHttpRequest(*))")
      */
     protected function aroundRequest(MethodInvocation $invocation)
     {
-        $log = Server::$instance->getContext()->getByClassName(Logger::class);
-        $log->info("aroundRequest");
+        $this->info("aroundRequest");
         list($request, $response) = $invocation->getArguments();
         if ($response instanceof Response) {
             $response->end("HelloAOP");

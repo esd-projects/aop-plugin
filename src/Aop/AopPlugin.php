@@ -9,10 +9,10 @@
 namespace ESD\Plugins\Aop;
 
 use Doctrine\Common\Annotations\CachedReader;
-use ESD\Core\Plugins\Config\ConfigException;
 use ESD\Core\Context\Context;
 use ESD\Core\Exception;
 use ESD\Core\PlugIn\AbstractPlugin;
+use ESD\Core\Plugins\Config\ConfigException;
 use ESD\Core\Server\Server;
 
 /**
@@ -78,7 +78,7 @@ class AopPlugin extends AbstractPlugin
         //自动添加src目录
         $serverConfig = Server::$instance->getServerConfig();
         $this->aopConfig->addIncludePath($serverConfig->getSrcDir());
-        $this->aopConfig->addIncludePath($serverConfig->getVendorDir()."/esd/esd-core/src");
+        $this->aopConfig->addIncludePath($serverConfig->getVendorDir() . "/esd");
         $this->aopConfig->setCacheDir($cacheDir);
         //初始化
         $this->applicationAspectKernel = ApplicationAspectKernel::getInstance();
