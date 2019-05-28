@@ -36,7 +36,6 @@ class AopPlugin extends AbstractPlugin
      * @param AopConfig|null $aopConfig
      * @throws \DI\DependencyException
      * @throws \ReflectionException
-     * @throws \DI\NotFoundException
      */
     public function __construct(?AopConfig $aopConfig = null)
     {
@@ -95,7 +94,6 @@ class AopPlugin extends AbstractPlugin
     /**
      * 在服务启动前
      * @param Context $context
-     * @return mixed
      * @throws ConfigException
      * @throws Exception
      * @throws \DI\DependencyException
@@ -116,7 +114,6 @@ class AopPlugin extends AbstractPlugin
     /**
      * 在进程启动前
      * @param Context $context
-     * @return mixed
      */
     public function beforeProcessStart(Context $context)
     {
