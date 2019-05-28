@@ -77,8 +77,7 @@ class AopPlugin extends AbstractPlugin
         $this->aopConfig->merge();
         //自动添加src目录
         $serverConfig = Server::$instance->getServerConfig();
-        $this->aopConfig->addIncludePath($serverConfig->getSrcDir());
-        $this->aopConfig->addIncludePath($serverConfig->getVendorDir() . "/esd");
+        $this->aopConfig->addIncludePath($serverConfig->getRootDir());
         $this->aopConfig->setCacheDir($cacheDir);
         //初始化
         $this->applicationAspectKernel = ApplicationAspectKernel::getInstance();
