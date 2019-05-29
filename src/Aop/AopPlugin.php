@@ -8,7 +8,6 @@
 
 namespace ESD\Plugins\Aop;
 
-use Doctrine\Common\Annotations\CachedReader;
 use ESD\Core\Context\Context;
 use ESD\Core\Exception;
 use ESD\Core\PlugIn\AbstractPlugin;
@@ -88,7 +87,6 @@ class AopPlugin extends AbstractPlugin
             'cacheDir' => $this->aopConfig->getCacheDir(), // Cache directory
             'includePaths' => $this->aopConfig->getIncludePaths()
         ]);
-        $this->setToDIContainer(CachedReader::class, $this->applicationAspectKernel->getContainer()->get('aspect.annotation.reader'));
     }
 
     /**
