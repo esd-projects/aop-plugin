@@ -8,6 +8,7 @@
 
 namespace ESD\Plugins\Aop;
 
+use Doctrine\Common\Cache\ArrayCache;
 use ESD\Core\Context\Context;
 use ESD\Core\Exception;
 use ESD\Core\PlugIn\AbstractPlugin;
@@ -29,12 +30,17 @@ class AopPlugin extends AbstractPlugin
      * @var ApplicationAspectKernel
      */
     private $applicationAspectKernel;
+    /**
+     * @var array
+     */
+    private $options;
 
     /**
      * AopPlugin constructor.
      * @param AopConfig|null $aopConfig
      * @throws \DI\DependencyException
      * @throws \ReflectionException
+     * @throws \DI\NotFoundException
      */
     public function __construct(?AopConfig $aopConfig = null)
     {
@@ -81,32 +87,28 @@ class AopPlugin extends AbstractPlugin
         //初始化
         $this->applicationAspectKernel = ApplicationAspectKernel::getInstance();
         $this->applicationAspectKernel->setConfig($this->aopConfig);
-        $this->applicationAspectKernel->initContainer([
+        $this->options = [
             'debug' => $serverConfig->isDebug(), // use 'false' for production mode
             'appDir' => $serverConfig->getRootDir(), // Application root directory
             'cacheDir' => $this->aopConfig->getCacheDir(), // Cache directory
             'includePaths' => $this->aopConfig->getIncludePaths()
-        ]);
+        ];
+        if (!$this->aopConfig->isFileCache()) {
+            $this->options['annotationCache'] = new ArrayCache();
+        }
+        $this->applicationAspectKernel->initContainer($this->options);
     }
 
     /**
      * 在服务启动前
      * @param Context $context
-     * @throws ConfigException
      * @throws Exception
      * @throws \DI\DependencyException
      * @throws \DI\NotFoundException
      */
     public function beforeServerStart(Context $context)
     {
-        $this->aopConfig->merge();
-        $serverConfig = Server::$instance->getServerConfig();
-        $this->applicationAspectKernel->init([
-            'debug' => $serverConfig->isDebug(), // use 'false' for production mode
-            'appDir' => $serverConfig->getRootDir(), // Application root directory
-            'cacheDir' => $this->aopConfig->getCacheDir(), // Cache directory
-            'includePaths' => $this->aopConfig->getIncludePaths()
-        ]);
+        $this->applicationAspectKernel->init($this->options);
     }
 
     /**

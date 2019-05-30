@@ -25,7 +25,11 @@ class AopConfig extends BaseConfig
      * @var string[]
      */
     protected $includePaths = [];
-
+    /**
+     * 是否文件缓存，默认内存缓存
+     * @var bool
+     */
+    protected $fileCache = false;
     /**
      * @var OrderAspect[]
      */
@@ -105,5 +109,21 @@ class AopConfig extends BaseConfig
         if (empty($this->includePaths)) {
             throw new ConfigException("includePaths不能为空");
         }
+    }
+
+    /**
+     * @return bool
+     */
+    public function isFileCache(): bool
+    {
+        return $this->fileCache;
+    }
+
+    /**
+     * @param bool $fileCache
+     */
+    public function setFileCache(bool $fileCache): void
+    {
+        $this->fileCache = $fileCache;
     }
 }
