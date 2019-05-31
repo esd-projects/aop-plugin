@@ -108,6 +108,13 @@ class AopPlugin extends AbstractPlugin
      */
     public function beforeServerStart(Context $context)
     {
+        $serverConfig = Server::$instance->getServerConfig();
+        $this->options = [
+            'debug' => $serverConfig->isDebug(), // use 'false' for production mode
+            'appDir' => $serverConfig->getRootDir(), // Application root directory
+            'cacheDir' => $this->aopConfig->getCacheDir(), // Cache directory
+            'includePaths' => $this->aopConfig->getIncludePaths()
+        ];
         $this->applicationAspectKernel->init($this->options);
     }
 
