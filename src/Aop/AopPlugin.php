@@ -92,7 +92,8 @@ class AopPlugin extends AbstractPlugin
             'debug' => $serverConfig->isDebug(), // use 'false' for production mode
             'appDir' => $serverConfig->getRootDir(), // Application root directory
             'cacheDir' => $this->aopConfig->getCacheDir(), // Cache directory
-            'includePaths' => $this->aopConfig->getIncludePaths()
+            'includePaths' => $this->aopConfig->getIncludePaths(),
+            'excludePaths' => $this->aopConfig->getExcludePaths()
         ];
         if (!$this->aopConfig->isFileCache()) {
             $this->options['annotationCache'] = new ArrayCache();
@@ -114,7 +115,8 @@ class AopPlugin extends AbstractPlugin
             'debug' => $serverConfig->isDebug(), // use 'false' for production mode
             'appDir' => $serverConfig->getRootDir(), // Application root directory
             'cacheDir' => $this->aopConfig->getCacheDir(), // Cache directory
-            'includePaths' => $this->aopConfig->getIncludePaths()
+            'includePaths' => $this->aopConfig->getIncludePaths(),
+            'excludePaths' => $this->aopConfig->getExcludePaths()
         ];
         $this->applicationAspectKernel->init($this->options);
     }

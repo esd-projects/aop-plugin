@@ -26,6 +26,11 @@ class AopConfig extends BaseConfig
      */
     protected $includePaths = [];
     /**
+     * Exclude paths restricts the directories where aspects should be applied
+     * @var string[]
+     */
+    protected $excludePaths = [];
+    /**
      * 是否文件缓存，默认内存缓存
      * @var bool
      */
@@ -125,5 +130,33 @@ class AopConfig extends BaseConfig
     public function setFileCache(bool $fileCache): void
     {
         $this->fileCache = $fileCache;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getExcludePaths(): array
+    {
+        return $this->excludePaths;
+    }
+
+    /**
+     * @param string[] $excludePaths
+     */
+    public function setExcludePaths(array $excludePaths): void
+    {
+        $this->excludePaths = $excludePaths;
+    }
+
+    /**
+     * @param string $excludePath
+     */
+    public function addExcludePath(string $excludePath)
+    {
+        $excludePath = realpath($excludePath);
+        if ($excludePath === false) return;
+        $key = str_replace(realpath(ROOT_DIR), "", $excludePath);
+        $key = str_replace("/", ".", $key);
+        $this->excludePaths[$key] = $excludePath;
     }
 }
