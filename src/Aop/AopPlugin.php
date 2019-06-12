@@ -11,8 +11,10 @@ namespace ESD\Plugins\Aop;
 use Doctrine\Common\Cache\ArrayCache;
 use ESD\Core\Context\Context;
 use ESD\Core\Exception;
+use ESD\Core\Order\OrderOwnerTrait;
 use ESD\Core\PlugIn\AbstractPlugin;
 use ESD\Core\Plugins\Config\ConfigException;
+use ESD\Core\Plugins\Logger\GetLogger;
 use ESD\Core\Server\Server;
 use rabbit\aop\Aop;
 use rabbit\aop\AopAspectKernel;
@@ -25,6 +27,8 @@ use rabbit\aop\GoAspectContainer;
  */
 class AopPlugin extends AbstractPlugin
 {
+    use OrderOwnerTrait;
+    use GetLogger;
     /**
      * @var AopConfig
      */
@@ -97,12 +101,19 @@ class AopPlugin extends AbstractPlugin
             'includePaths' => $this->aopConfig->getIncludePaths(),
             'excludePaths' => $this->aopConfig->getExcludePaths()
         ];
+        foreach ($this->aopConfig->getAspects() as $aspect) {
+            $this->addOrder($aspect);
+        }
+        $this->order();
+        foreach ($this->orderList as $aspect) {
+            $this->debug("Add aspect {$aspect->getName()}");
+        }
         if (!$this->aopConfig->isFileCache()) {
             $this->options['annotationCache'] = new ArrayCache();
             $this->options['containerClass'] = new GoAspectContainer();
-            new Aop(AopAspectKernel::class, $this->aopConfig->getAspects(), $this->options);
+            new Aop(AopAspectKernel::class, $this->orderList, $this->options);
         } else {
-            new Aop(FileCacheAspectKernel::class, $this->aopConfig->getAspects(), $this->options);
+            new Aop(FileCacheAspectKernel::class, $this->orderList, $this->options);
         }
 
     }
@@ -132,11 +143,4 @@ class AopPlugin extends AbstractPlugin
         $this->aopConfig = $aopConfig;
     }
 
-    /**
-     * @return FileCacheAspectKernel
-     */
-    public function getApplicationAspectKernel(): FileCacheAspectKernel
-    {
-        return $this->applicationAspectKernel;
-    }
 }
