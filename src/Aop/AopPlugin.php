@@ -14,6 +14,9 @@ use ESD\Core\Exception;
 use ESD\Core\PlugIn\AbstractPlugin;
 use ESD\Core\Plugins\Config\ConfigException;
 use ESD\Core\Server\Server;
+use rabbit\aop\Aop;
+use rabbit\aop\AopAspectKernel;
+use rabbit\aop\GoAspectContainer;
 
 /**
  * AOP插件
@@ -27,10 +30,6 @@ class AopPlugin extends AbstractPlugin
      */
     private $aopConfig;
     /**
-     * @var ApplicationAspectKernel
-     */
-    private $applicationAspectKernel;
-    /**
      * @var array
      */
     private $options;
@@ -38,9 +37,7 @@ class AopPlugin extends AbstractPlugin
     /**
      * AopPlugin constructor.
      * @param AopConfig|null $aopConfig
-     * @throws \DI\DependencyException
      * @throws \ReflectionException
-     * @throws \DI\NotFoundException
      */
     public function __construct(?AopConfig $aopConfig = null)
     {
@@ -65,8 +62,6 @@ class AopPlugin extends AbstractPlugin
      * @param Context $context
      * @throws ConfigException
      * @throws Exception
-     * @throws \DI\DependencyException
-     * @throws \DI\NotFoundException
      * @throws \Exception
      */
     public function init(Context $context)
@@ -85,28 +80,12 @@ class AopPlugin extends AbstractPlugin
         $this->aopConfig->addIncludePath($serverConfig->getVendorDir() . "/esd");
         $this->aopConfig->setCacheDir($cacheDir);
         $this->aopConfig->merge();
-        //初始化
-        $this->applicationAspectKernel = ApplicationAspectKernel::getInstance();
-        $this->applicationAspectKernel->setConfig($this->aopConfig);
-        $this->options = [
-            'debug' => $serverConfig->isDebug(), // use 'false' for production mode
-            'appDir' => $serverConfig->getRootDir(), // Application root directory
-            'cacheDir' => $this->aopConfig->getCacheDir(), // Cache directory
-            'includePaths' => $this->aopConfig->getIncludePaths(),
-            'excludePaths' => $this->aopConfig->getExcludePaths()
-        ];
-        if (!$this->aopConfig->isFileCache()) {
-            $this->options['annotationCache'] = new ArrayCache();
-        }
-        $this->applicationAspectKernel->initContainer($this->options);
     }
 
     /**
      * 在服务启动前
      * @param Context $context
      * @throws Exception
-     * @throws \DI\DependencyException
-     * @throws \DI\NotFoundException
      */
     public function beforeServerStart(Context $context)
     {
@@ -118,7 +97,14 @@ class AopPlugin extends AbstractPlugin
             'includePaths' => $this->aopConfig->getIncludePaths(),
             'excludePaths' => $this->aopConfig->getExcludePaths()
         ];
-        $this->applicationAspectKernel->init($this->options);
+        if (!$this->aopConfig->isFileCache()) {
+            $this->options['annotationCache'] = new ArrayCache();
+            $this->options['containerClass'] = new GoAspectContainer();
+            new Aop(AopAspectKernel::class, $this->aopConfig->getAspects(), $this->options);
+        } else {
+            new Aop(FileCacheAspectKernel::class, $this->aopConfig->getAspects(), $this->options);
+        }
+
     }
 
     /**
@@ -147,9 +133,9 @@ class AopPlugin extends AbstractPlugin
     }
 
     /**
-     * @return ApplicationAspectKernel
+     * @return FileCacheAspectKernel
      */
-    public function getApplicationAspectKernel(): ApplicationAspectKernel
+    public function getApplicationAspectKernel(): FileCacheAspectKernel
     {
         return $this->applicationAspectKernel;
     }
